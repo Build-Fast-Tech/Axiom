@@ -64,6 +64,11 @@ Legend: ✅ Pass (applies & handled) · 🟥 Action (do before launch) · ⬜ N/
 4. **CI/CD** — GitHub Actions: dependency audit + OWASP ZAP baseline on every PR; CodeRabbit review gate.
 5. **Pre-launch pen test** — OWASP ZAP (XSS/SQLi/auth) + Burp Suite (endpoint IDOR), rate limiting on sensitive routes.
 6. **Secrets** — all keys in env vars; production keys only; rotate before launch.
+7. **Stock API key** — keep it server-side. `api/quote.js` is a Vercel serverless
+   proxy that reads `FINNHUB_KEY` from the environment so the key never reaches the
+   browser; the client calls `/api/quote` and falls back to an admin-entered key only
+   for local/static testing. Set `FINNHUB_KEY` in Vercel → Settings → Environment
+   Variables (never commit it). Weather/crypto need no key.
 
 > Bottom line: every checklist item that is **meaningful for a static front-end is
 > green**. The remaining items are **inherently backend concerns** and become live

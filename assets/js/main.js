@@ -379,20 +379,31 @@
   }
   function loadStocks() {
     if (!$("[data-stock]")) return;
-    const key = (adminSettings().stockKey || "").trim();
     const status = $("[data-stock-status]"), note = $("[data-stock-note]");
-    if (!key) { if (status) status.textContent = "Not connected"; return; }
+    const key = (adminSettings().stockKey || "").trim();
+    // Prefer a same-origin secure proxy (/api/quote) that keeps the key server-
+    // side (FINNHUB_KEY env var). If it isn't deployed (e.g. plain static host),
+    // fall back to a key entered in the admin. Otherwise show "Not connected".
+    fetch("/api/quote?symbol=SPY")
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((j) => { if (j && j.c != null) startStocks(true, status, note); else throw 0; })
+      .catch(() => { if (key) startStocks(false, status, note, key); else if (status) status.textContent = "Not connected"; });
+  }
+  function startStocks(useProxy, status, note, key) {
     if (note) note.style.display = "none";
+    const url = useProxy
+      ? (s) => "/api/quote?symbol=" + s
+      : (s) => "https://finnhub.io/api/v1/quote?symbol=" + s + "&token=" + encodeURIComponent(key);
     const run = () => {
       ["SPY", "DIA", "QQQ"].forEach((sym) => {
-        fetch("https://finnhub.io/api/v1/quote?symbol=" + sym + "&token=" + encodeURIComponent(key)).then((r) => r.json()).then((d) => {
+        fetch(url(sym)).then((r) => r.json()).then((d) => {
           const row = $('[data-stock="' + sym + '"]'); if (!row || d.c == null) return;
           $(".price", row).textContent = d.c.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
           const chg = $(".chg", row), dp = d.dp || 0; chg.textContent = (dp >= 0 ? "▲ " : "▼ ") + Math.abs(dp).toFixed(2) + "%"; chg.className = "chg " + (dp >= 0 ? "up" : "down");
           flash(row, dp >= 0);
         }).catch(() => {});
       });
-      if (status) status.textContent = "Live · " + nowTime();
+      if (status) status.textContent = "Live · " + nowTime() + (useProxy ? " · secure" : "");
     };
     run(); setInterval(run, 60000);
   }

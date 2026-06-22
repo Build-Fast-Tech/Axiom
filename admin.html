@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Axiom — Admin</title>
 <meta name="robots" content="noindex, nofollow">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self' https://aiupteocubknkbgchtme.supabase.co wss://aiupteocubknkbgchtme.supabase.co; frame-ancestors 'none'; form-action 'self'">
 <meta name="theme-color" content="#E11D2A">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23E11D2A'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,15 +23,14 @@
     <h1>Admin sign in</h1>
     <p>Manage stories, comments, subscribers and monetization.</p>
     <form id="login-form" autocomplete="off">
-      <div class="field-l"><label for="lg-user">Username</label><input id="lg-user" type="text" autocomplete="username" required></div>
-      <div class="field-l"><label for="lg-pass">Password</label><input id="lg-pass" type="password" autocomplete="current-password" required></div>
+      <div class="field-l"><label for="lg-user">Email</label><input id="lg-user" type="email" autocomplete="email" placeholder="you@email.com" required></div>
       <div id="lg-err" class="login__err" role="alert"></div>
-      <button class="btn btn--primary btn--block" type="submit">Sign in</button>
+      <button class="btn btn--primary btn--block" type="submit">Send magic link</button>
     </form>
-    <div class="login__demo">Demo login — <b>admin</b> / <b>axiom2026</b></div>
+    <div class="login__demo">Admin access is limited to:<br><b>abdullah.xf90@gmail.com</b> · <b>i250072@isb.nu.edu.pk</b></div>
     <div class="login__warn">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
-      <span>This gate is front-end only and <b>not real security</b>. Before launch, protect the admin with server-side auth (Supabase Auth + RLS). See the Security tab.</span>
+      <span>Passwordless sign-in via Supabase Auth — we email a one-time link. Only the two allow-listed emails get admin rights (enforced server-side by database RLS).</span>
     </div>
   </div>
 </div>
@@ -59,7 +58,7 @@
       <a href="#settings" data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7 19.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 5 13.6H5a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 6.7 7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 2.7-1.1V3a2 2 0 1 1 4 0v.1A1.6 1.6 0 0 0 19 4.7l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 .3 1.8z"/></svg> Settings</a>
     </nav>
     <div class="sidebar__foot">
-      <div class="admin-user"><span class="avatar">AK</span><div><div class="nm">Alex Kerr</div><div class="rl">Editor-in-chief</div></div></div>
+      <div class="admin-user"><span class="avatar">A</span><div><div class="nm">Admin</div><div class="rl">Administrator</div></div></div>
       <button class="btn btn--ghost btn--block btn--sm" id="logout" style="margin-top:6px">Sign out</button>
     </div>
   </aside>
@@ -81,7 +80,9 @@
   </div>
 </div>
 
+<script src="assets/js/supabase.min.js" defer></script>
 <script src="assets/js/data.js" defer></script>
+<script src="assets/js/supabase.js" defer></script>
 <script src="assets/js/admin.js" defer></script>
 </body>
 </html>

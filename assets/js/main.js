@@ -11,6 +11,7 @@
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const on = (el, ev, fn, o) => el && el.addEventListener(ev, fn, o);
   const D = window.AXIOM;
+  const DB = window.AXIOM_DB;
   const param = (k) => new URLSearchParams(location.search).get(k);
   const esc = (s) => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   const sec = (slug) => (D.sections[slug] || D.sections.world);
@@ -47,7 +48,7 @@
     el.className = "card fade-up";
     el.href = D.articleHref(a.category, { id: a.id, t: a.title, read: a.read, sub: a.excerpt });
     el.innerHTML =
-      `<div class="media ${s.g}"><span class="media__label"><span class="tag tag--soft">${esc(s.name)}</span></span></div>` +
+      `<div class="media ${s.g}">${mediaImg(a)}<span class="media__label"><span class="tag tag--soft">${esc(s.name)}</span></span></div>` +
       `<div class="card__body"><h3>${esc(a.title)}</h3>` +
       (a.excerpt ? `<p>${esc(a.excerpt)}</p>` : "") +
       `<div class="meta"><span class="cat">${esc(s.name)}</span>` + (a.read ? `<span class="sep">·</span><span>${esc(a.read)}</span>` : "") + `</div></div>`;
@@ -62,18 +63,20 @@
   function sideStory(a) {
     const s = sec(a.category);
     return `<a class="side-story fade-up" href="${D.articleHref(a.category, { id: a.id, t: a.title, read: a.read, sub: a.excerpt })}">
-      <div class="media ${s.g}"></div>
+      <div class="media ${s.g}">${mediaImg(a)}</div>
       <div><span class="kicker">${esc(s.name)}</span><h3>${esc(a.title)}</h3>${a.read ? `<div class="meta"><span>${esc(a.read)}</span></div>` : ""}</div></a>`;
   }
   function leadMarkup(a) {
     const s = sec(a.category);
     return `<a class="hero__lead fade-up" href="${D.articleHref(a.category, { id: a.id, t: a.title, read: a.read, sub: a.excerpt })}">
-      <div class="media ${s.g}"></div><div class="scrim"></div>
+      <div class="media ${s.g}">${mediaImg(a)}</div><div class="scrim"></div>
       <div class="content"><span class="tag">${esc(s.name)}</span><h1>${esc(a.title)}</h1>
       ${a.excerpt ? `<p>${esc(a.excerpt)}</p>` : ""}
       <div class="byline">${a.author ? `<span class="avatar">${esc(initials(a.author))}</span><span>${esc(a.author)}</span>` : ""}${a.read ? `<span class="sep"></span><span>${esc(a.read)}</span>` : ""}</div></div></a>`;
   }
   function initials(n) { return (n || "").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase(); }
+  function revealNow() { requestAnimationFrame(() => $$(".fade-up").forEach((e) => e.classList.add("in"))); }
+  function mediaImg(a) { return a && a.image_url ? '<img src="' + esc(a.image_url) + '" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1">' : ""; }
 
   /* ---------- TICKER ---------- */
   function renderTicker(pub) {
@@ -86,8 +89,8 @@
   }
 
   /* ---------- HOME ---------- */
-  function renderHome() {
-    const pub = D.published();
+  async function renderHome() {
+    const pub = await DB.published();
     renderTicker(pub);
 
     const hero = $("[data-home-hero]");
@@ -110,14 +113,14 @@
       ? pub.slice(0, 5).map((a, i) => `<li><span class="n">${i + 1}</span><div><a href="${D.articleHref(a.category, { id: a.id, t: a.title })}">${esc(a.title)}</a><div class="meta">${esc(sec(a.category).name)}</div></div></li>`).join("")
       : `<li style="grid-template-columns:1fr"><div class="note-src">No data yet — most-read ranks once articles get traffic.</div></li>`;
 
-    highlightNav(null);
+    revealNow(); highlightNav(null);
   }
   function emptyInline(msg) { return `<div class="note-src" style="padding:20px 0">${esc(msg)}</div>`; }
 
   /* ---------- CATEGORY ---------- */
-  function renderCategory() {
+  async function renderCategory() {
     const cat = (D.sections[param("cat")] && param("cat")) || "world";
-    const s = sec(cat), list = D.bySection(cat);
+    const s = sec(cat), list = await DB.bySection(cat);
     document.title = s.name + " — Axiom";
 
     const h1 = $(".cat-hero h1"); if (h1) h1.innerHTML = '<span class="dot"></span>' + esc(s.name);
@@ -148,13 +151,13 @@
       : `<li style="grid-template-columns:1fr"><div class="note-src">No data yet.</div></li>`;
     if (mrHead) mrHead.innerHTML = mrHead.innerHTML.replace(/Most read.*/i, "Most read in " + esc(s.name));
 
-    highlightNav(cat);
+    revealNow(); highlightNav(cat);
   }
 
   /* ---------- ARTICLE ---------- */
-  function renderArticle() {
+  async function renderArticle() {
     const id = param("id");
-    const rec = id ? D.byId(id) : null;
+    const rec = id ? await DB.byId(id) : null;
     const cat = (D.sections[param("cat")] && param("cat")) || (rec && rec.category) || "world";
     const s = sec(cat);
 
@@ -172,7 +175,7 @@
     const nm = $(".article-meta .name"); if (nm) nm.textContent = author || "Staff writer";
     const subEl = $(".article-meta .sub"); if (subEl) subEl.innerHTML = (rec && rec.date ? esc(rec.date) : "Unpublished draft") + (read ? " · " + esc(read) + " read" : "");
 
-    const hm = $(".article-hero .media"); if (hm) hm.className = "media " + s.g;
+    const hm = $(".article-hero .media"); if (hm) { hm.className = "media " + s.g; if (rec && rec.image_url) hm.innerHTML = mediaImg(rec); }
     const crumb = $(".breadcrumb"); if (crumb) crumb.innerHTML =
       '<a href="index.html">Home</a><span class="sep">›</span><a href="' + D.categoryHref(cat) + '">' + esc(s.name) + "</a>" +
       (title ? '<span class="sep">›</span><span>' + esc(title.length > 42 ? title.slice(0, 42) + "…" : title) + "</span>" : "");
@@ -206,11 +209,11 @@
     const rel = $("[data-related]");
     if (rel) {
       rel.innerHTML = "";
-      const more = D.bySection(cat).filter((a) => String(a.id) !== String(id)).slice(0, 4);
+      const more = (await DB.bySection(cat)).filter((a) => String(a.id) !== String(id)).slice(0, 4);
       if (more.length) more.forEach((a) => rel.appendChild(card(a)));
       else rel.appendChild(emptyEl("No related stories yet", "Other " + s.name + " articles will appear here.", "empty--row"));
     }
-    highlightNav(cat);
+    revealNow(); highlightNav(cat);
   }
 
   function highlightNav(cat) {
@@ -257,18 +260,18 @@
     $$("[data-close-search]").forEach((b) => on(b, "click", closeS));
     on(overlay, "click", (e) => { if (e.target === overlay) closeS(); });
 
-    function show(q) {
+    let searchT;
+    async function show(q) {
       const has = q.trim().length > 0;
       if (hint) hint.textContent = has ? "Results" : "Browse sections";
       if (terms) terms.style.display = has ? "none" : "";
       if (!has) { results.innerHTML = ""; return; }
-      const ql = q.toLowerCase();
-      const hits = D.published().filter((a) => (a.title || "").toLowerCase().includes(ql) || sec(a.category).name.toLowerCase().includes(ql)).slice(0, 8);
+      const hits = await DB.search(q);
       results.innerHTML = hits.length
         ? hits.map((a) => `<a href="${D.articleHref(a.category, { id: a.id, t: a.title })}"><span class="rc">${esc(sec(a.category).name)}</span><span>${esc(a.title)}</span></a>`).join("")
-        : `<div class="none">No results for “${esc(q)}”. ${D.published().length ? "Try another term." : "No articles have been published yet."}</div>`;
+        : `<div class="none">No results for “${esc(q)}”.</div>`;
     }
-    on(input, "input", () => show(input.value));
+    on(input, "input", () => { clearTimeout(searchT); searchT = setTimeout(() => show(input.value), 220); });
     on(input, "keydown", (e) => { if (e.key === "Enter") { const f = $("a", results); if (f) location.href = f.href; } });
     window.__openSearch = openS; window.__closeSearch = closeS;
   }
@@ -296,12 +299,19 @@
 
   /* ---------- NEWSLETTER ---------- */
   function initNewsletter() {
-    $$("[data-newsletter]").forEach((form) => on(form, "submit", (e) => {
+    $$("[data-newsletter]").forEach((form) => on(form, "submit", async (e) => {
       e.preventDefault();
       const input = $("input[type=email]", form), msg = $(".msg", form);
-      const ok = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(input.value.trim());
-      if (msg) { msg.style.color = ok ? "" : "var(--accent)"; msg.textContent = ok ? "✓ Thanks — confirm via the email we just sent." : "Please enter a valid email address."; }
-      if (ok) { input.value = ""; input.disabled = true; }
+      const email = input.value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { if (msg) { msg.style.color = "var(--accent)"; msg.textContent = "Please enter a valid email address."; } return; }
+      if (msg) { msg.style.color = ""; msg.textContent = "Subscribing…"; }
+      const res = await DB.subscribe(email);
+      const err = res && res.error;
+      if (msg) {
+        if (!err) { msg.style.color = ""; msg.textContent = "✓ You're subscribed."; input.value = ""; input.disabled = true; }
+        else if (/duplicate|unique/i.test(err.message || "")) { msg.style.color = ""; msg.textContent = "✓ You're already on the list."; input.value = ""; }
+        else { msg.style.color = "var(--accent)"; msg.textContent = "Couldn't subscribe — please try again."; }
+      }
     }));
   }
 

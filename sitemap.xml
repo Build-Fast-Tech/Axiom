@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Static routes. Replace www.axiom.news with your real domain after deploy.
+     For Google News, also generate a news-sitemap of recent article URLs from
+     the Supabase `articles` table (published in the last 48h). -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://www.axiom.news/</loc><changefreq>hourly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.axiom.news/category.html?cat=world</loc><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.axiom.news/category.html?cat=business</loc><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.axiom.news/category.html?cat=technology</loc><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.axiom.news/category.html?cat=ai</loc><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.axiom.news/category.html?cat=science</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.axiom.news/category.html?cat=sport</loc><changefreq>hourly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.axiom.news/category.html?cat=culture</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.axiom.news/category.html?cat=health</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.axiom.news/category.html?cat=travel</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.axiom.news/category.html?cat=lifestyle</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.axiom.news/category.html?cat=gaming</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.axiom.news/category.html?cat=live</loc><changefreq>hourly</changefreq><priority>0.7</priority></url>
+</urlset>

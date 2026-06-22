@@ -1,0 +1,18 @@
+# Local tooling / editor
+.claude/
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Dependencies / build (none currently, but future-proofed)
+node_modules/
+dist/
+.vercel/
+
+# Logs & env (never commit secrets)
+*.log
+.env
+.env.*

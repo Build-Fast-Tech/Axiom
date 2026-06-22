@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Axiom — Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; form-action 'self'">
+<meta name="theme-color" content="#E11D2A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23E11D2A'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='700' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body class="admin-body">
+
+<!-- ============ LOGIN GATE (demo, client-side only) ============ -->
+<div id="login" class="login" style="display:none">
+  <div class="login__card">
+    <div class="login__brand"><span class="brand__mark">A</span><span class="brand__name">Axiom<b>.</b></span></div>
+    <h1>Admin sign in</h1>
+    <p>Manage stories, comments, subscribers and monetization.</p>
+    <form id="login-form" autocomplete="off">
+      <div class="field-l"><label for="lg-user">Username</label><input id="lg-user" type="text" autocomplete="username" required></div>
+      <div class="field-l"><label for="lg-pass">Password</label><input id="lg-pass" type="password" autocomplete="current-password" required></div>
+      <div id="lg-err" class="login__err" role="alert"></div>
+      <button class="btn btn--primary btn--block" type="submit">Sign in</button>
+    </form>
+    <div class="login__demo">Demo login — <b>admin</b> / <b>axiom2026</b></div>
+    <div class="login__warn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <span>This gate is front-end only and <b>not real security</b>. Before launch, protect the admin with server-side auth (Supabase Auth + RLS). See the Security tab.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app" class="admin" style="display:none">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar__brand"><span class="brand__mark">A</span><span class="brand__name" style="font-size:20px">Axiom<b>.</b></span><span class="tag" style="margin-left:auto">ADMIN</span></div>
+    <nav class="side-nav">
+      <a href="#dashboard" data-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg> Dashboard</a>
+
+      <div class="grp">Content</div>
+      <a href="#articles" data-view="articles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg> Articles <span class="badge" data-badge="articles">0</span></a>
+      <a href="#categories" data-view="categories"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1.5"/><circle cx="3.5" cy="12" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/></svg> Categories</a>
+      <a href="#comments" data-view="comments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comments <span class="badge" data-badge="comments">0</span></a>
+      <a href="#media" data-view="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg> Media</a>
+
+      <div class="grp">Audience &amp; Growth</div>
+      <a href="#subscribers" data-view="subscribers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/></svg> Subscribers</a>
+      <a href="#ads" data-view="ads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Ads &amp; revenue</a>
+
+      <div class="grp">System</div>
+      <a href="#security" data-view="security"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Security</a>
+      <a href="#settings" data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7 19.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 5 13.6H5a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 6.7 7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 2.7-1.1V3a2 2 0 1 1 4 0v.1A1.6 1.6 0 0 0 19 4.7l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 .3 1.8z"/></svg> Settings</a>
+    </nav>
+    <div class="sidebar__foot">
+      <div class="admin-user"><span class="avatar">AK</span><div><div class="nm">Alex Kerr</div><div class="rl">Editor-in-chief</div></div></div>
+      <button class="btn btn--ghost btn--block btn--sm" id="logout" style="margin-top:6px">Sign out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <header class="topbar">
+      <button class="icon-btn side-toggle" id="side-toggle" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg></button>
+      <h1 id="page-title">Dashboard</h1>
+      <div class="spacer"></div>
+      <div class="search-mini"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><input type="search" placeholder="Quick search…" aria-label="Search"></div>
+      <a class="btn btn--ghost btn--sm" href="index.html" target="_blank" rel="noopener">View site ↗</a>
+      <button class="icon-btn theme-toggle" id="admin-theme" aria-label="Toggle theme">
+        <svg class="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
+      </button>
+    </header>
+    <main id="view-host"></main>
+  </div>
+</div>
+
+<script src="assets/js/data.js" defer></script>
+<script src="assets/js/admin.js" defer></script>
+</body>
+</html>
